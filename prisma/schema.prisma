@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model tank_extras {
+  id         Int     @id @default(autoincrement())
+  tank_id    Int?
+  extra_type String? @db.VarChar(255)
+  tanks      tanks?  @relation(fields: [tank_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tank_id, extra_type])
+}
+
+model tank_variations {
+  id                 Int     @id @default(autoincrement())
+  tank_id            Int?
+  variant_asin       String? @db.VarChar(10)
+  variant_title      String?
+  variant_dimensions Json?
+  tanks              tanks?  @relation(fields: [tank_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tank_id, variant_asin])
+}
+
+model tanks {
+  id                         Int               @id @default(autoincrement())
+  asin                       String            @unique @db.VarChar(10)
+  standardized_brand         String?           @db.VarChar(255)
+  brand                      String?           @db.VarChar(255)
+  manufacturer               String?           @db.VarChar(255)
+  title                      String
+  description                String?
+  price                      Decimal?          @db.Decimal(10, 2)
+  final_price                Decimal?          @db.Decimal(10, 2)
+  stock                      String?           @db.VarChar(255)
+  currency                   String?           @db.VarChar(3)
+  stated_capacity_liters     Decimal?          @db.Decimal(10, 3)
+  length_cm                  Decimal?          @db.Decimal(10, 2)
+  width_cm                   Decimal?          @db.Decimal(10, 2)
+  height_cm                  Decimal?          @db.Decimal(10, 2)
+  material_thickness_cm      Decimal?          @db.Decimal(10, 3)
+  stated_weight_kg           Decimal?          @db.Decimal(10, 3)
+  calculated_capacity_liters Decimal?          @db.Decimal(10, 3)
+  calculated_weight_kg       Decimal?          @db.Decimal(10, 3)
+  calculated_full_weight_kg  Decimal?          @db.Decimal(10, 3)
+  is_thickness_estimated     Boolean?
+  material_type              String?           @db.VarChar(255)
+  tank_type                  String?           @db.VarChar(255)
+  rim_type                   String?           @db.VarChar(255)
+  edge_type                  String?           @db.VarChar(255)
+  url                        String
+  is_prime_eligible          Boolean?
+  reviews_count              Int?
+  rating                     Decimal?          @db.Decimal(3, 1)
+  parent_asin                String?           @db.VarChar(10)
+  created_at                 DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at                 DateTime?         @default(now()) @db.Timestamp(6)
+  tank_extras                tank_extras[]
+  tank_variations            tank_variations[]
+}
